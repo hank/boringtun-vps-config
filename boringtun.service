@@ -1,0 +1,15 @@
+[Unit]
+Description=BoringTUN
+Before=network-pre.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+ExecStart=/root/.cargo/bin/boringtun --disable-multi-queue -f wg0
+ExecStartPost=/usr/bin/wg setconf wg0 /etc/wireguard/wg0.conf
+Restart=on-failure
+# Other Restart options: or always, on-abort, etc
+
+[Install]
+WantedBy=multi-user.target

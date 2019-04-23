@@ -1,0 +1,37 @@
+*nat
+:PREROUTING ACCEPT [2491:401520]
+:POSTROUTING ACCEPT [581:41251]
+:OUTPUT ACCEPT [581:41251]
+-A POSTROUTING -s 172.16.1.0/24 -o venet0 -j MASQUERADE
+COMMIT
+*raw
+:PREROUTING ACCEPT [10014:1467030]
+:OUTPUT ACCEPT [4966:1203262]
+COMMIT
+*mangle
+:PREROUTING ACCEPT [10014:1467030]
+:INPUT ACCEPT [8335:980634]
+:FORWARD ACCEPT [1673:485892]
+:OUTPUT ACCEPT [4966:1203262]
+:POSTROUTING ACCEPT [6582:1678838]
+COMMIT
+*filter
+:INPUT DROP [2251:384344]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [581:41251]
+-A INPUT -p udp -m udp --dport 13200 -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -d 10.1.1.1/32 -p icmp -m icmp --icmp-type 8 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -d 10.1.1.1/32 -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
+-A FORWARD -i wg0 -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 22 -m state --state NEW -j ACCEPT
+-A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A OUTPUT -s 10.1.1.1/32 -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A OUTPUT -s 10.1.1.1/32 -p icmp -m icmp --icmp-type 8 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
+COMMIT
