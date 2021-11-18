@@ -37,6 +37,12 @@ AllowedIPs = 172.16.1.3/32
 ```
 
 ## Build and install boringtun
+### Option: Use packaged binary
+
+You can use the `boringtun` binary packaged in this repository, but you are encouraged to build your own using the below instructions. Keep in mind that `rustc` requires gobs of memory, so building directly on a cheap OpenVZ instance is usually not going to work. To use the packaged binary, just copy it into `/usr/local/bin` or wherever your path is.
+
+### Building
+
 We need to build boringtun from trunk as of 20190422. This may change, at which point installing through cargo should be fine.
 
 ```bash
